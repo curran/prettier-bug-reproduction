@@ -1,6 +1,4 @@
-import prettier from 'prettier/standalone';
-import parserHTML from 'prettier/parser-html';
-const plugins = [parserHTML];
+import React, { useEffect, useState } from 'react';
 
 // Example from https://prettier.io/playground/
 const unformattedHTML = `<!DOCTYPE html>
@@ -20,10 +18,21 @@ const unformattedHTML = `<!DOCTYPE html>
   </body>
 </HTML>`;
 
-const formattedHTML = prettier.format(unformattedHTML, {
-  parser: 'html',
-  plugins
-});
+const loadAndFormat = async () => {
+  const { prettier, plugins } = await import('./dynamicImports');
+  return prettier.format(unformattedHTML, {
+    parser: 'html',
+    plugins
+  });
+};
 
-const App = () => <pre>{formattedHTML}</pre> 
+const App = () => {
+  const [formattedHTML, setFormattedHTML] = useState(null);
+
+  useEffect(() => {
+    loadAndFormat().then(setFormattedHTML);
+  }, []);
+
+  return <pre>{formattedHTML}</pre>;
+}
 export default App;
